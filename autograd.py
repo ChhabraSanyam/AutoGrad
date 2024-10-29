@@ -207,7 +207,7 @@ print("Test Case 6")
 print("Gradient of x (2^3):", x.grad)       # Expected: n * (x^(n-1)) = 3 * (2^(3-1)) = 12.0
 print()
 
-#7 Tanh Operation
+#7 tanh Operation
 x = Variable(1.0)
 z = x.tanh()        # Computes tanh(1)
 
