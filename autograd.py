@@ -2,12 +2,43 @@ import numpy as np
 
 class Variable:
     def __init__(self, value):
-        self.value = value          # The value of the variable
-        self.grad = 0.0             # Gradient initialized to 0
-        self.op = None              # Operation that generated this variable
-        self.children = []          # Variables that contributed to this variable
+        self.value = value
+        self.grad = 0.0
+        self.op = None
+        self.children = []
     def __repr__(self):
         return f"Variable(value={self.value}, grad={self.grad})"
+
+    def __add__(self, other):
+        op = AddOp(self, other)
+        result = op.forward()
+        result.children = [self, other]
+        return result
+    def __sub__(self, other):
+        op = SubOp(self, other)
+        result = op.forward()
+        result.children = [self, other]
+        return result
+    def __mul__(self, other):
+        op = MulOp(self, other)
+        result = op.forward()
+        result.children = [self, other]
+        return result
+    def __truediv__(self, other):
+        op = DivOp(self, other)
+        result = op.forward()
+        result.children = [self, other]
+        return result
+    def power(self, exponent):
+        op = PowOp(self, exponent)
+        result = op.forward()
+        result.children = [self]
+        return result
+    def tanh(self):
+        op = TanhOp(self)
+        result = op.forward()
+        result.children = [self]
+        return result
 
 class AddOp:
     def __init__(self, left, right):
@@ -73,63 +104,15 @@ class TanhOp:
         self.input = input
         self.output = None
     def forward(self):
-        self.output = Variable(np.tanh(self.input.value))       # Using numpy for the tanh function
+        self.output = Variable(np.tanh(self.input.value))
         self.output.op = self
         return self.output
-
     def backward(self, grad_output):
         self.input.grad += grad_output * (1 - self.output.value ** 2)
 
-# Integrate operations into the Variable class
-class Variable:
-    def __init__(self, value):
-        self.value = value
-        self.grad = 0.0
-        self.op = None
-        self.children = []
-    def __repr__(self):
-        return f"Variable(value={self.value}, grad={self.grad})"
-
-    def __add__(self, other):
-        op = AddOp(self, other)
-        result = op.forward()
-        result.children = [self, other]
-        return result
-
-    def __sub__(self, other):
-        op = SubOp(self, other)
-        result = op.forward()
-        result.children = [self, other]
-        return result
-
-    def __mul__(self, other):
-        op = MulOp(self, other)
-        result = op.forward()
-        result.children = [self, other]
-        return result
-
-    def __truediv__(self, other):
-        op = DivOp(self, other)
-        result = op.forward()
-        result.children = [self, other]
-        return result
-
-    def power(self, exponent):
-        op = PowOp(self, exponent)
-        result = op.forward()
-        result.children = [self]
-        return result
-
-    def tanh(self):
-        op = TanhOp(self)
-        result = op.forward()
-        result.children = [self]
-        return result
-    
 def backward(variable):
-    variable.grad = 1.0  # Start with a gradient of 1 for the output
+    variable.grad = 1.0
     stack = [variable]
-    
     while stack:
         v = stack.pop()
         if v.op is not None:
@@ -204,12 +187,12 @@ z = x.power(n)
 backward(z)
 
 print("Test Case 6")
-print("Gradient of x (2^3):", x.grad)       # Expected: n * (x^(n-1)) = 3 * (2^(3-1)) = 12.0
+print("Gradient of x (2^3):", x.grad)           # Expected: n * (x^(n-1)) = 3 * (2^(3-1)) = 12.0
 print()
 
-#7 tanh Operation
+#7 Tanh Operation
 x = Variable(1.0)
-z = x.tanh()        # Computes tanh(1)
+z = x.tanh()
 
 backward(z)
 
