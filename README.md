@@ -1,5 +1,5 @@
 # A Simple AutoGrad System
-Implementing a simple automatic differentiation system. This system will track operations in a computational graph and compute gradients automatically for various mathematical operations. 
+Implementing a simple automatic differentiation system. This system will compute gradients automatically for various mathematical operations.  
 
 
 ## Overview
